@@ -18,7 +18,8 @@ const int atticPuzzle = 7;
 const int ge3 = 8;
 const int wellSwitch = 9;
 const int piezoBuzzer = 10;
-//ENCLOSURE STATES-------------------
+//GAME STATES-------------------
+int gameStage = 0;
 bool doorUnlocked = false;
 bool eyesPushed = false;
 bool gardenSolved = false;
@@ -48,5 +49,62 @@ void setup() {
 }
 
 void loop() {
+  //UNLOCK FRONT DOOR-----------------------------------
+  if gameStage == 0 && digitalRead(doorSwitch == HIGH){
+    doorServo.write(90);
+    delay(500);
+    gameStage = 1;
+  }
+  
+  //CORALINE PUSHES EYES AWAY-----------------------------------
+  if gameStage == 1 && digitalRead(buttonsPushSwitch) == HIGH){
+    omSprinServo.write(180); //other mother turns evil
+    //ghost eye blink sequence
+    digitalWrite(ge1, HIGH);
+    delay(250);
+    digitalWrite(ge1, LOW);
+    
+    digitalWrite(ge2, HIGH);
+    delay(250);
+    digitalWrite(ge2, LOW);
 
+    digitalWrite(ge3, HIGH);
+    delay(250);
+    digitalWrite(ge3, LOW);
+
+    gameStage = 2;
+  }
+  
+  //GARDEN PUZZLE------------------------------------------
+  if (gameStage == 2 && digitalRead(gardenPuzzle) == HIGH){
+    digitalWrite(ge1, HIGH);
+    marbleServo.write(90);
+
+    gameStage = 3;
+  }
+
+  //BASEMENT PUZZLE------------------------------------------
+  if (gameStage == 3 && digitalRead(basementPuzzle) == HIGH){
+    digitalWrite (ge2, HIGH);
+
+    gameStage = 3;
+  }
+
+  //ATTIC PUZZLE-------------------------------------------
+  if (gameStage == 4 && digitalRead(atticPuzzle) == HIGH){
+    digitalWrite(ge3, HIGH);
+    delay(500);
+    omFallServo.write(90);
+    delay(500);
+    keyServo.write(90);
+
+    gameStage = 5;
+  }
+
+  //THROW KEY IN WELL-
+  if (gameStage == 5 && digitalRead(wellSwitch) == HIGH){
+    tone(piezoBuzzer, 523);
+
+    gameStage = 6;
+  }
 }
